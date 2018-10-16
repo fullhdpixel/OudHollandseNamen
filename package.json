@@ -1,0 +1,22 @@
+{
+  "name": "oudhollandsenamen",
+  "version": "1.0.0",
+  "description": "Maakt van jouw naam een oud hollandse naam",
+  "main": "index.js",
+  "scripts": {
+    "test": "yarn test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fullhdpixel/OudHollandseNamen.git"
+  },
+  "keywords": [
+    "javascript"
+  ],
+  "author": "Thijs Smudde",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fullhdpixel/OudHollandseNamen/issues"
+  },
+  "homepage": "https://github.com/fullhdpixel/OudHollandseNamen#readme"
+}
