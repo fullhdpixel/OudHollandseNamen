@@ -1,5 +1,6 @@
 import React from 'react'
 import {render} from 'react-dom'
+import GitHubForkRibbon from 'react-github-fork-ribbon'
 
 import toastr from 'toastr'
 
@@ -35,7 +36,7 @@ class App extends React.Component {
     // determine gender based on voornaam
     voornaam = voornaam.trim()
     achternaam = achternaam.trim()
-    
+
     fetch(`https://api.genderize.io/?name=${voornaam}&country_id=NL`).then(response => {
       if (!(response && response.status == 200)) 
         toastr.error('API Response was not correct!', 'Something went wrong')
@@ -56,20 +57,36 @@ class App extends React.Component {
     })
   }
 
-  capitalize = text => text.charAt(0).toUpperCase() + text.substr(1)
+  capitalize = text => text
+    .charAt(0)
+    .toUpperCase() + text.substr(1)
 
-  onChange = ({target: {name, value}}) => this.setState({[name]: this.capitalize(value)})
+  onChange = ({
+    target: {
+      name,
+      value
+    }
+  }) => this.setState({
+    [name]: this.capitalize(value)
+  })
 
   retry = () => this.setState({naam: ''})
 
   render() {
     const {voornaam, achternaam, naam} = this.state
 
-    const hasName = naam && naam.length > 1 ? true : false
+    const hasName = naam && naam.length > 1
+      ? true
+      : false
 
     return (
       <React.Fragment>
-        <a class="github-fork-ribbon" href="http://url.to-your.repo" title="Fork me on GitHub">Created by Thijs</a>
+        <GitHubForkRibbon
+          href='https://github.com/fullhdpixel/OudHollandseNamen/'
+          target='_blank'
+          position='right'>
+          View Source Code
+        </GitHubForkRibbon>
         <main>
           <div className='content'>
             <div className='glitch'>
@@ -81,9 +98,8 @@ class App extends React.Component {
             </div>
             <h2 className='content__title'>{naam}</h2>
             {hasName && <button onClick={() => this.retry()}>Probeer Opnieuw</button>}
-            {!hasName &&
-            <form onSubmit={this.createNaam}>
-            <p className='content__text'>Jouw naam in de tijd van René Descartes.</p>
+            {!hasName && <form onSubmit={this.createNaam}>
+              <p className='content__text'>Jouw naam in de tijd van René Descartes.</p>
               <input
                 autoFocus
                 onChange={this.onChange}
@@ -101,7 +117,7 @@ class App extends React.Component {
                 name='achternaam'
                 value={achternaam}
                 required/>
-              <button type='submit'>Genereer je oud Hollandse naam</button>
+              <button type='submit'>Start de tijdmachine</button>
             </form>}
           </div>
         </main>
