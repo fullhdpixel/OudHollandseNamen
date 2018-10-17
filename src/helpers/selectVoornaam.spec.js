@@ -7,8 +7,8 @@ import vrouwen from '../../databank/voornamen/vrouwen'
 
 describe('selectVoornaam()', function () {  
   it('#can select voornaam (Male)', function() {
-    const result = selectVoornaam('Thijs', mannen)
-    expect(result).to.equal('Matthijs')
+    const result = selectVoornaam('Sjors', mannen)
+    expect(result).to.equal('Georg')
   })
 
   it('#can select voornaam (Female)', function() {    

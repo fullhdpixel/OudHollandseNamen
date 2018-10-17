@@ -5,12 +5,12 @@ import achternamen from '../../databank/achternamen'
 
 describe('selectAchternaam()', function () {  
   it('#can select achternaam (1)', function() {
-    const result = selectAchternaam('Smudde', achternamen)
-    expect(result).to.equal('Amede')
+    const result = selectAchternaam('de Vliet', achternamen)
+    expect(result).to.equal('de Boij')
   })
 
   it('#can select achternaam (2)', function() {    
-    const result = selectAchternaam('den Hartog', achternamen)
-    expect(result).to.equal('ter Maet')
+    const result = selectAchternaam('Kanter', achternamen)
+    expect(result).to.equal('Sanders')
   })
 })

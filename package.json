@@ -8,16 +8,17 @@
     "start": "webpack-dev-server --mode development",
     "transpile": "babel src -d dist --copy-files",
     "build": "webpack --mode production",
-    "deploy": "gh-pages -d examples/dist",
+    "deploy": "gh-pages -d dist/",
     "publish-demo": "npm run build && npm run deploy",
     "prepublishOnly": "npm run transpile"
   },
   "dependencies": {
     "babel-plugin-transform-class-properties": "^6.24.1",
+    "github-fork-ribbon-css": "^0.2.1",
     "lodash": "^4.17.11",
     "prop-types": "^15.6.1",
     "react": "^16.5.2",
-    "react-toastify": "^4.4.0"
+    "toastr": "^2.1.4"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",

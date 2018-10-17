@@ -8,6 +8,10 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactDom = require('react-dom');
 
+var _toastr = require('toastr');
+
+var _toastr2 = _interopRequireDefault(_toastr);
+
 var _selectVoornaam = require('./helpers/selectVoornaam');
 
 var _selectAchternaam = require('./helpers/selectAchternaam');
@@ -54,26 +58,30 @@ var App = function (_React$Component) {
 
       var _this$state = _this.state,
           voornaam = _this$state.voornaam,
-          achternaam = _this$state.achternaam;
+          achternaam = _this$state.achternaam,
+          lastRequest = _this$state.lastRequest;
+
+
+      if (lastRequest === voornaam + ' ' + achternaam) return _toastr2.default.error('Dit heb je al gedaan');
 
       // determine gender based on voornaam
 
       fetch('https://api.genderize.io/?name=' + voornaam + '&country_id=NL').then(function (response) {
-        if (!(response && response.status == 200)) toastr.error('API Response was not correct!', 'Something went wrong');
+        if (!(response && response.status == 200)) _toastr2.default.error('API Response was not correct!', 'Something went wrong');
 
         return response.json();
       }).then(function (_ref) {
         var error = _ref.error,
             gender = _ref.gender;
 
-        if (error && error.message) return toastr.error(error.code + ' API error', error.message);
+        if (error && error.message) return _toastr2.default.error(error.code + ' API error', error.message);
 
         var collection = gender === 'male' ? _mannen2.default : _vrouwen2.default;
         var firstname = (0, _selectVoornaam.selectVoornaam)(voornaam, collection);
         var lastname = (0, _selectAchternaam.selectAchternaam)(achternaam, _achternamen2.default);
         var naam = firstname + ' ' + lastname;
 
-        _this.setState({ naam: naam });
+        _this.setState({ naam: naam, lastRequest: voornaam + ' ' + achternaam });
       });
     };
 
@@ -87,9 +95,10 @@ var App = function (_React$Component) {
     };
 
     _this.state = {
-      voornaam: 'thijs', // input
-      achternaam: 'smudde', // input
-      naam: '' // result
+      voornaam: '', // input
+      achternaam: '', // input
+      naam: '', // result
+      lastRequest: '' // avoids sending new requests
     };
     return _this;
   }
@@ -109,7 +118,7 @@ var App = function (_React$Component) {
         _react2.default.createElement(
           'form',
           { onSubmit: this.createNaam },
-          'Jouw naam in de 18e eeuw.',
+          'Voor jouw naam in en kijk wat je naam zou zijn in de tijd van Descartes.',
           _react2.default.createElement('br', null),
           _react2.default.createElement('input', {
             autoFocus: true,

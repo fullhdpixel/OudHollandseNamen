@@ -1,6 +1,8 @@
 import React from 'react'
 import {render} from 'react-dom'
 
+import toastr from 'toastr'
+
 import {selectVoornaam} from './helpers/selectVoornaam'
 import {selectAchternaam} from './helpers/selectAchternaam'
 
@@ -12,9 +14,9 @@ class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-        voornaam: 'thijs',   // input
-        achternaam: 'smudde', // input
-        naam: ''        // result
+      voornaam: '', // input
+      achternaam: '', // input
+      naam: '', // result
     }
   }
 
@@ -28,20 +30,24 @@ class App extends React.Component {
   createNaam = e => {
     e.preventDefault()
 
-    const {voornaam, achternaam} = this.state
+    let {voornaam, achternaam} = this.state
 
     // determine gender based on voornaam
-
+    voornaam = voornaam.trim()
+    achternaam = achternaam.trim()
+    
     fetch(`https://api.genderize.io/?name=${voornaam}&country_id=NL`).then(response => {
-      if (!(response && response.status == 200))
+      if (!(response && response.status == 200)) 
         toastr.error('API Response was not correct!', 'Something went wrong')
-      
+
       return response.json()
     }).then(({error, gender}) => {
-      if (error && error.message)
+      if (error && error.message) 
         return toastr.error(error.code + ' API error', error.message)
 
-      const collection = gender === 'male' ? mannen : vrouwen
+      const collection = gender === 'male'
+        ? mannen
+        : vrouwen
       const firstname = selectVoornaam(voornaam, collection)
       const lastname = selectAchternaam(achternaam, achternamen)
       const naam = `${firstname} ${lastname}`
@@ -50,39 +56,55 @@ class App extends React.Component {
     })
   }
 
-  onChange = event => {
-    const target = event.target
-    const {name, value} = target
+  capitalize = text => text.charAt(0).toUpperCase() + text.substr(1)
 
-    this.setState({[name]: value})
-  }
+  onChange = ({target: {name, value}}) => this.setState({[name]: this.capitalize(value)})
+
+  retry = () => this.setState({naam: ''})
 
   render() {
     const {voornaam, achternaam, naam} = this.state
 
+    const hasName = naam && naam.length > 1 ? true : false
+
     return (
       <React.Fragment>
-        <form onSubmit={this.createNaam}>Jouw naam in de 18e eeuw.
-          <br/>
-          <input
-            autoFocus
-            onChange={this.onChange}
-            type='text'
-            placeholder='Voornaam'
-            name='voornaam'
-            value={voornaam}
-            required/>
-          <input
-            autoFocus
-            onChange={this.onChange}
-            type='text'
-            placeholder='Achternaam'
-            name='achternaam'
-            value={achternaam}
-            required/>
-          <button type='submit'>Genereer je OudHollandSche naam</button>
-        </form>
-        {naam}
+        <a class="github-fork-ribbon" href="http://url.to-your.repo" title="Fork me on GitHub">Created by Thijs</a>
+        <main>
+          <div className='content'>
+            <div className='glitch'>
+              <div className='glitch__img'></div>
+              <div className='glitch__img'></div>
+              <div className='glitch__img'></div>
+              <div className='glitch__img'></div>
+              <div className='glitch__img'></div>
+            </div>
+            <h2 className='content__title'>{naam}</h2>
+            {hasName && <button onClick={() => this.retry()}>Probeer Opnieuw</button>}
+            {!hasName &&
+            <form onSubmit={this.createNaam}>
+            <p className='content__text'>Jouw naam in de tijd van René Descartes.</p>
+              <input
+                autoFocus
+                onChange={this.onChange}
+                type='text'
+                className='form-control'
+                placeholder='Voornaam'
+                name='voornaam'
+                value={voornaam}
+                required/>
+              <input
+                onChange={this.onChange}
+                type='text'
+                className='form-control'
+                placeholder='Achternaam'
+                name='achternaam'
+                value={achternaam}
+                required/>
+              <button type='submit'>Genereer je oud Hollandse naam</button>
+            </form>}
+          </div>
+        </main>
       </React.Fragment>
     )
   }
