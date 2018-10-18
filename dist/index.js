@@ -12,13 +12,7 @@ var _reactGithubForkRibbon = require('react-github-fork-ribbon');
 
 var _reactGithubForkRibbon2 = _interopRequireDefault(_reactGithubForkRibbon);
 
-var _toastr = require('toastr');
-
-var _toastr2 = _interopRequireDefault(_toastr);
-
-var _selectVoornaam = require('./helpers/selectVoornaam');
-
-var _selectAchternaam = require('./helpers/selectAchternaam');
+var _selectNaam = require('./helpers/selectNaam');
 
 var _mannen = require('../databank/voornamen/mannen');
 
@@ -57,35 +51,46 @@ var App = function (_React$Component) {
       return _achternamen2.default[selectedValue];
     };
 
-    _this.createNaam = function (e) {
+    _this.fetchGender = function (e) {
       e.preventDefault();
 
-      var _this$state = _this.state,
-          voornaam = _this$state.voornaam,
-          achternaam = _this$state.achternaam;
+      var voornaam = _this.state.voornaam;
 
       // determine gender based on voornaam
 
       voornaam = voornaam.trim();
-      achternaam = achternaam.trim();
+
+      if (!navigator.onLine) return _this.setState({ hasError: true, errorReason: 'Je bent helaas niet online.' });
 
       fetch('https://api.genderize.io/?name=' + voornaam + '&country_id=NL').then(function (response) {
-        if (!(response && response.status == 200)) _toastr2.default.error('API Response was not correct!', 'Something went wrong');
+        if (!(response && response.status == 200)) return _this.setState({ hasError: true, errorReason: 'Tijdmachine is kapot.' });
 
         return response.json();
       }).then(function (_ref) {
         var error = _ref.error,
             gender = _ref.gender;
 
-        if (error && error.message) return _toastr2.default.error(error.code + ' API error', error.message);
+        if (error && error.message) return _this.setState({ hasError: true, errorReason: error.code + ' API error' + error.message });
 
-        var collection = gender === 'male' ? _mannen2.default : _vrouwen2.default;
-        var firstname = (0, _selectVoornaam.selectVoornaam)(voornaam, collection);
-        var lastname = (0, _selectAchternaam.selectAchternaam)(achternaam, _achternamen2.default);
-        var naam = firstname + ' ' + lastname;
-
-        _this.setState({ naam: naam });
+        _this.createNaam(gender);
       });
+    };
+
+    _this.createNaam = function (gender) {
+      var _this$state = _this.state,
+          voornaam = _this$state.voornaam,
+          achternaam = _this$state.achternaam;
+
+
+      voornaam = voornaam.trim();
+      achternaam = achternaam.trim();
+
+      var voornamen = gender === 'male' ? _mannen2.default : _vrouwen2.default;
+      var firstname = (0, _selectNaam.selectNaam)(voornaam, voornamen);
+      var lastname = (0, _selectNaam.selectNaam)(achternaam, _achternamen2.default);
+      var naam = firstname + ' ' + lastname;
+
+      _this.setState({ naam: naam });
     };
 
     _this.capitalize = function (text) {
@@ -100,13 +105,15 @@ var App = function (_React$Component) {
     };
 
     _this.retry = function () {
-      return _this.setState({ naam: '' });
+      return _this.setState({ naam: '', hasError: false, errorReason: '' });
     };
 
     _this.state = {
       voornaam: '', // input
       achternaam: '', // input
-      naam: '' // result
+      naam: '', // result
+      hasError: false, // if errorBox should be shown
+      errorReason: '' // string with detailed error
     };
     return _this;
   }
@@ -119,10 +126,12 @@ var App = function (_React$Component) {
       var _state = this.state,
           voornaam = _state.voornaam,
           achternaam = _state.achternaam,
-          naam = _state.naam;
+          naam = _state.naam,
+          hasError = _state.hasError,
+          errorReason = _state.errorReason;
 
 
-      var hasName = naam && naam.length > 1 ? true : false;
+      var hasName = naam && naam.length > 1 || hasError ? true : false;
 
       return _react2.default.createElement(
         _react2.default.Fragment,
@@ -150,6 +159,16 @@ var App = function (_React$Component) {
               _react2.default.createElement('div', { className: 'glitch__img' }),
               _react2.default.createElement('div', { className: 'glitch__img' })
             ),
+            hasError && _react2.default.createElement(
+              'div',
+              { className: 'content__text' },
+              _react2.default.createElement(
+                'div',
+                { className: 'errorBox' },
+                'Oeps, er ging iets verkeerd bij het starten van de tijdmachine. ',
+                errorReason
+              )
+            ),
             _react2.default.createElement(
               'h2',
               { className: 'content__title' },
@@ -164,7 +183,7 @@ var App = function (_React$Component) {
             ),
             !hasName && _react2.default.createElement(
               'form',
-              { onSubmit: this.createNaam },
+              { onSubmit: this.fetchGender },
               _react2.default.createElement(
                 'p',
                 { className: 'content__text' },
