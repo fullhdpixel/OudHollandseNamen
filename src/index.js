@@ -2,10 +2,7 @@ import React from 'react'
 import {render} from 'react-dom'
 import GitHubForkRibbon from 'react-github-fork-ribbon'
 
-import toastr from 'toastr'
-
-import {selectVoornaam} from './helpers/selectVoornaam'
-import {selectAchternaam} from './helpers/selectAchternaam'
+import {selectNaam} from './helpers/selectNaam'
 
 import mannen from '../databank/voornamen/mannen'
 import vrouwen from '../databank/voornamen/vrouwen'
@@ -18,6 +15,8 @@ class App extends React.Component {
       voornaam: '', // input
       achternaam: '', // input
       naam: '', // result
+      hasError: false, // if errorBox should be shown
+      errorReason: '' // string with detailed error
     }
   }
 
@@ -28,33 +27,44 @@ class App extends React.Component {
     return achternamen[selectedValue]
   }
 
-  createNaam = e => {
+  fetchGender = e => {
     e.preventDefault()
 
-    let {voornaam, achternaam} = this.state
+    let {voornaam} = this.state
 
     // determine gender based on voornaam
     voornaam = voornaam.trim()
-    achternaam = achternaam.trim()
+
+    if (!navigator.onLine)
+      return this.setState({hasError: true, errorReason: 'Je bent helaas niet online.'})
 
     fetch(`https://api.genderize.io/?name=${voornaam}&country_id=NL`).then(response => {
       if (!(response && response.status == 200)) 
-        toastr.error('API Response was not correct!', 'Something went wrong')
+        return this.setState({hasError: true, errorReason: 'Tijdmachine is kapot.'})
 
       return response.json()
     }).then(({error, gender}) => {
       if (error && error.message) 
-        return toastr.error(error.code + ' API error', error.message)
+        return this.setState({hasError: true, errorReason: error.code + ' API error' + error.message})
 
-      const collection = gender === 'male'
-        ? mannen
-        : vrouwen
-      const firstname = selectVoornaam(voornaam, collection)
-      const lastname = selectAchternaam(achternaam, achternamen)
-      const naam = `${firstname} ${lastname}`
-
-      this.setState({naam})
+      this.createNaam(gender)
     })
+  }
+
+  createNaam = gender => {
+    let {voornaam, achternaam} = this.state
+
+    voornaam = voornaam.trim()
+    achternaam = achternaam.trim()
+
+    const voornamen = gender === 'male'
+    ? mannen
+    : vrouwen
+    const firstname = selectNaam(voornaam, voornamen)
+    const lastname = selectNaam(achternaam, achternamen)
+    const naam = `${firstname} ${lastname}`
+
+    this.setState({naam})
   }
 
   capitalize = text => text
@@ -70,12 +80,12 @@ class App extends React.Component {
     [name]: this.capitalize(value)
   })
 
-  retry = () => this.setState({naam: ''})
+  retry = () => this.setState({naam: '', hasError: false, errorReason: ''})
 
   render() {
-    const {voornaam, achternaam, naam} = this.state
+    const {voornaam, achternaam, naam, hasError, errorReason} = this.state
 
-    const hasName = naam && naam.length > 1
+    const hasName = (naam && naam.length > 1) || hasError
       ? true
       : false
 
@@ -96,9 +106,13 @@ class App extends React.Component {
               <div className='glitch__img'></div>
               <div className='glitch__img'></div>
             </div>
+            {hasError && <div className='content__text'>
+              <div className='errorBox'>Oeps, er ging iets verkeerd bij het starten van de tijdmachine. {errorReason}</div>
+            </div>}
+
             <h2 className='content__title'>{naam}</h2>
             {hasName && <button onClick={() => this.retry()}>Probeer Opnieuw</button>}
-            {!hasName && <form onSubmit={this.createNaam}>
+            {!hasName && <form onSubmit={this.fetchGender}>
               <p className='content__text'>Jouw naam in de tijd van René Descartes.</p>
               <input
                 autoFocus

@@ -12,12 +12,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 describe('selectAchternaam()', function () {
   it('#can select achternaam (1)', function () {
-    var result = (0, _selectAchternaam.selectAchternaam)('Smudde', _achternamen2.default);
-    (0, _chai.expect)(result).to.equal('Amede');
+    var result = (0, _selectAchternaam.selectAchternaam)('de Vliet', _achternamen2.default);
+    (0, _chai.expect)(result).to.equal('de Boij');
   });
 
   it('#can select achternaam (2)', function () {
-    var result = (0, _selectAchternaam.selectAchternaam)('den Hartog', _achternamen2.default);
-    (0, _chai.expect)(result).to.equal('ter Maet');
+    var result = (0, _selectAchternaam.selectAchternaam)('Kanter', _achternamen2.default);
+    (0, _chai.expect)(result).to.equal('Sanders');
   });
 });

@@ -16,8 +16,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 describe('selectVoornaam()', function () {
   it('#can select voornaam (Male)', function () {
-    var result = (0, _selectVoornaam.selectVoornaam)('Thijs', _mannen2.default);
-    (0, _chai.expect)(result).to.equal('Matthijs');
+    var result = (0, _selectVoornaam.selectVoornaam)('Sjors', _mannen2.default);
+    (0, _chai.expect)(result).to.equal('Georg');
   });
 
   it('#can select voornaam (Female)', function () {

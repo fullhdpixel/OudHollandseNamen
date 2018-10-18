@@ -8,6 +8,10 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactDom = require('react-dom');
 
+var _reactGithubForkRibbon = require('react-github-fork-ribbon');
+
+var _reactGithubForkRibbon2 = _interopRequireDefault(_reactGithubForkRibbon);
+
 var _toastr = require('toastr');
 
 var _toastr2 = _interopRequireDefault(_toastr);
@@ -58,13 +62,12 @@ var App = function (_React$Component) {
 
       var _this$state = _this.state,
           voornaam = _this$state.voornaam,
-          achternaam = _this$state.achternaam,
-          lastRequest = _this$state.lastRequest;
-
-
-      if (lastRequest === voornaam + ' ' + achternaam) return _toastr2.default.error('Dit heb je al gedaan');
+          achternaam = _this$state.achternaam;
 
       // determine gender based on voornaam
+
+      voornaam = voornaam.trim();
+      achternaam = achternaam.trim();
 
       fetch('https://api.genderize.io/?name=' + voornaam + '&country_id=NL').then(function (response) {
         if (!(response && response.status == 200)) _toastr2.default.error('API Response was not correct!', 'Something went wrong');
@@ -81,24 +84,29 @@ var App = function (_React$Component) {
         var lastname = (0, _selectAchternaam.selectAchternaam)(achternaam, _achternamen2.default);
         var naam = firstname + ' ' + lastname;
 
-        _this.setState({ naam: naam, lastRequest: voornaam + ' ' + achternaam });
+        _this.setState({ naam: naam });
       });
     };
 
-    _this.onChange = function (event) {
-      var target = event.target;
-      var name = target.name,
-          value = target.value;
+    _this.capitalize = function (text) {
+      return text.charAt(0).toUpperCase() + text.substr(1);
+    };
 
+    _this.onChange = function (_ref2) {
+      var _ref2$target = _ref2.target,
+          name = _ref2$target.name,
+          value = _ref2$target.value;
+      return _this.setState(_defineProperty({}, name, _this.capitalize(value)));
+    };
 
-      _this.setState(_defineProperty({}, name, value));
+    _this.retry = function () {
+      return _this.setState({ naam: '' });
     };
 
     _this.state = {
       voornaam: '', // input
       achternaam: '', // input
-      naam: '', // result
-      lastRequest: '' // avoids sending new requests
+      naam: '' // result
     };
     return _this;
   }
@@ -106,43 +114,87 @@ var App = function (_React$Component) {
   _createClass(App, [{
     key: 'render',
     value: function render() {
+      var _this2 = this;
+
       var _state = this.state,
           voornaam = _state.voornaam,
           achternaam = _state.achternaam,
           naam = _state.naam;
 
 
+      var hasName = naam && naam.length > 1 ? true : false;
+
       return _react2.default.createElement(
         _react2.default.Fragment,
         null,
         _react2.default.createElement(
-          'form',
-          { onSubmit: this.createNaam },
-          'Voor jouw naam in en kijk wat je naam zou zijn in de tijd van Descartes.',
-          _react2.default.createElement('br', null),
-          _react2.default.createElement('input', {
-            autoFocus: true,
-            onChange: this.onChange,
-            type: 'text',
-            placeholder: 'Voornaam',
-            name: 'voornaam',
-            value: voornaam,
-            required: true }),
-          _react2.default.createElement('input', {
-            autoFocus: true,
-            onChange: this.onChange,
-            type: 'text',
-            placeholder: 'Achternaam',
-            name: 'achternaam',
-            value: achternaam,
-            required: true }),
-          _react2.default.createElement(
-            'button',
-            { type: 'submit' },
-            'Genereer je OudHollandSche naam'
-          )
+          _reactGithubForkRibbon2.default,
+          {
+            href: 'https://github.com/fullhdpixel/OudHollandseNamen/',
+            target: '_blank',
+            position: 'right' },
+          'View Source Code'
         ),
-        naam
+        _react2.default.createElement(
+          'main',
+          null,
+          _react2.default.createElement(
+            'div',
+            { className: 'content' },
+            _react2.default.createElement(
+              'div',
+              { className: 'glitch' },
+              _react2.default.createElement('div', { className: 'glitch__img' }),
+              _react2.default.createElement('div', { className: 'glitch__img' }),
+              _react2.default.createElement('div', { className: 'glitch__img' }),
+              _react2.default.createElement('div', { className: 'glitch__img' }),
+              _react2.default.createElement('div', { className: 'glitch__img' })
+            ),
+            _react2.default.createElement(
+              'h2',
+              { className: 'content__title' },
+              naam
+            ),
+            hasName && _react2.default.createElement(
+              'button',
+              { onClick: function onClick() {
+                  return _this2.retry();
+                } },
+              'Probeer Opnieuw'
+            ),
+            !hasName && _react2.default.createElement(
+              'form',
+              { onSubmit: this.createNaam },
+              _react2.default.createElement(
+                'p',
+                { className: 'content__text' },
+                'Jouw naam in de tijd van Ren\xE9 Descartes.'
+              ),
+              _react2.default.createElement('input', {
+                autoFocus: true,
+                onChange: this.onChange,
+                type: 'text',
+                className: 'form-control',
+                placeholder: 'Voornaam',
+                name: 'voornaam',
+                value: voornaam,
+                required: true }),
+              _react2.default.createElement('input', {
+                onChange: this.onChange,
+                type: 'text',
+                className: 'form-control',
+                placeholder: 'Achternaam',
+                name: 'achternaam',
+                value: achternaam,
+                required: true }),
+              _react2.default.createElement(
+                'button',
+                { type: 'submit' },
+                'Start de tijdmachine'
+              )
+            )
+          )
+        )
       );
     }
   }]);

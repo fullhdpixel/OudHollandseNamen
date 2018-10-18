@@ -311,6 +311,10 @@ form {
   margin-top: 1rem;
 }
 
+input {
+  outline: none;
+}
+
 button {
   font: 700 16px "Helvetica Neue", Helvetica, Arial, sans-serif;
   z-index: 999;
@@ -328,7 +332,6 @@ button {
   line-height: 1.5;
   border-radius: .25rem;
   transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
-
   padding: 10px 20px;
   background-color: #c00;
   box-shadow: 0 3px 7px 0 #0000006b, inset 0 1px 1px 0 rgba(0,0,0,.1);
@@ -340,4 +343,10 @@ button {
 ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
   color: white;
   opacity: 0.6; /* Firefox */
+}
+
+.errorBox {
+  background-color: #c00;
+  box-shadow: 0 3px 7px 0 #0000006b, inset 0 1px 1px 0 rgba(0,0,0,.1);
+  padding: 15px 10px;
 }
