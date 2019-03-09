@@ -2,11 +2,17 @@ import React from 'react'
 import {render} from 'react-dom'
 import GitHubForkRibbon from 'react-github-fork-ribbon'
 
+import * as Styled from './css/Index'
+
 import {selectNaam} from './helpers/selectNaam'
 
 import mannen from '../databank/voornamen/mannen'
 import vrouwen from '../databank/voornamen/vrouwen'
 import achternamen from '../databank/achternamen'
+
+import frenchMannen from '../databank/french_voornamen/mannen'
+import frenchVrouwen from '../databank/french_voornamen/vrouwen'
+import frenchAchternamen from '../databank/french_achternamen'
 
 class App extends React.Component {
   constructor(props) {
@@ -16,15 +22,9 @@ class App extends React.Component {
       achternaam: '', // input
       naam: '', // result
       hasError: false, // if errorBox should be shown
-      errorReason: '' // string with detailed error
+      errorReason: '', // string with detailed error
+      isFrench: true
     }
-  }
-
-  selectAchternaam = () => {
-    const countAchternamen = achternamen.length
-    const selectedValue = Math.floor(Math.random() * countAchternamen)
-
-    return achternamen[selectedValue]
   }
 
   fetchGender = e => {
@@ -52,16 +52,16 @@ class App extends React.Component {
   }
 
   createNaam = gender => {
-    let {voornaam, achternaam} = this.state
+    let {voornaam, achternaam, isFrench} = this.state
 
     voornaam = voornaam.trim()
     achternaam = achternaam.trim()
 
     const voornamen = gender === 'male'
-    ? mannen
-    : vrouwen
+    ? (isFrench ? frenchMannen : mannen)
+    : (isFrench ? frenchVrouwen : vrouwen)
     const firstname = selectNaam(voornaam, voornamen)
-    const lastname = selectNaam(achternaam, achternamen)
+    const lastname = selectNaam(achternaam, isFrench ? frenchAchternamen : achternamen)
     const naam = `${firstname} ${lastname}`
 
     this.setState({naam})
@@ -82,6 +82,8 @@ class App extends React.Component {
 
   retry = () => this.setState({naam: '', hasError: false, errorReason: ''})
 
+  switchLanguage = countryString => this.setState({isFrench: countryString === 'french'})
+
   render() {
     const {voornaam, achternaam, naam, hasError, errorReason} = this.state
 
@@ -99,13 +101,13 @@ class App extends React.Component {
         </GitHubForkRibbon>
         <main>
           <div className='content'>
-            <div className='glitch'>
+            <Styled.glitch>
               <div className='glitch__img'></div>
               <div className='glitch__img'></div>
               <div className='glitch__img'></div>
               <div className='glitch__img'></div>
               <div className='glitch__img'></div>
-            </div>
+            </Styled.glitch>
             {hasError && <div className='content__text'>
               <div className='errorBox'>Oeps, er ging iets verkeerd bij het starten van de tijdmachine. {errorReason}</div>
             </div>}
@@ -114,6 +116,18 @@ class App extends React.Component {
             {hasName && <button onClick={() => this.retry()}>Probeer Opnieuw</button>}
             {!hasName && <form onSubmit={this.fetchGender}>
               <p className='content__text'>Jouw naam in de tijd van René Descartes.</p>
+              <Styled.FlagContainer>
+                <Styled.FlagItem
+                  onClick={() => this.switchLanguage('dutch')}
+                  isSelected={!this.state.isFrench}
+                  src='../OudHollandseNamen/img/dutch_flag.svg'
+                  alt=''/>
+                <Styled.FlagItem
+                  onClick={() => this.switchLanguage('french')}
+                  isSelected={this.state.isFrench}
+                  src='../OudHollandseNamen/img/french_flag.png'
+                  alt=''/>
+              </Styled.FlagContainer>
               <input
                 autoFocus
                 onChange={this.onChange}
