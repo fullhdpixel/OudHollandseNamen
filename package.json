@@ -2,14 +2,14 @@
   "name": "oudhollandsenamen",
   "version": "1.0.0",
   "description": "Maakt van jouw naam een oud hollandse naam",
-  "main": "dist/index.js",
+  "main": "docs/index.js",
   "scripts": {
     "test": "mocha --require babel-core/register \"./src/**/*.spec.js*\" --watch",
     "start": "webpack-dev-server --mode development",
-    "transpile": "babel src -d dist/OudHollandseNamen --copy-files",
+    "transpile": "babel src -d docs/OudHollandseNamen --copy-files",
     "prepublishOnly": "npm run transpile",
     "build": "webpack --mode production",
-    "deploy": "gh-pages -d dist/",
+    "deploy": "gh-pages -d docs/",
     "publish-demo": "yarn build && yarn deploy"
   },
   "peerDependencies": {
