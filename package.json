@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha --require babel-core/register \"./src/**/*.spec.js*\" --watch",
     "start": "webpack-dev-server --mode development",
-    "transpile": "babel OudHollandseNamen -d dist --copy-files",
+    "transpile": "babel OudHollandseNamen -d dist/OudHollandseNamen --copy-files",
     "prepublishOnly": "npm run transpile",
     "build": "webpack --mode production",
     "deploy": "gh-pages -d dist/",
