@@ -12,6 +12,10 @@ var _reactGithubForkRibbon = require('react-github-fork-ribbon');
 
 var _reactGithubForkRibbon2 = _interopRequireDefault(_reactGithubForkRibbon);
 
+var _Index = require('./css/Index');
+
+var Styled = _interopRequireWildcard(_Index);
+
 var _selectNaam = require('./helpers/selectNaam');
 
 var _mannen = require('../databank/voornamen/mannen');
@@ -25,6 +29,20 @@ var _vrouwen2 = _interopRequireDefault(_vrouwen);
 var _achternamen = require('../databank/achternamen');
 
 var _achternamen2 = _interopRequireDefault(_achternamen);
+
+var _mannen3 = require('../databank/french_voornamen/mannen');
+
+var _mannen4 = _interopRequireDefault(_mannen3);
+
+var _vrouwen3 = require('../databank/french_voornamen/vrouwen');
+
+var _vrouwen4 = _interopRequireDefault(_vrouwen3);
+
+var _french_achternamen = require('../databank/french_achternamen');
+
+var _french_achternamen2 = _interopRequireDefault(_french_achternamen);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -43,13 +61,6 @@ var App = function (_React$Component) {
     _classCallCheck(this, App);
 
     var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
-
-    _this.selectAchternaam = function () {
-      var countAchternamen = _achternamen2.default.length;
-      var selectedValue = Math.floor(Math.random() * countAchternamen);
-
-      return _achternamen2.default[selectedValue];
-    };
 
     _this.fetchGender = function (e) {
       e.preventDefault();
@@ -79,15 +90,16 @@ var App = function (_React$Component) {
     _this.createNaam = function (gender) {
       var _this$state = _this.state,
           voornaam = _this$state.voornaam,
-          achternaam = _this$state.achternaam;
+          achternaam = _this$state.achternaam,
+          isFrench = _this$state.isFrench;
 
 
       voornaam = voornaam.trim();
       achternaam = achternaam.trim();
 
-      var voornamen = gender === 'male' ? _mannen2.default : _vrouwen2.default;
+      var voornamen = gender === 'male' ? isFrench ? _mannen4.default : _mannen2.default : isFrench ? _vrouwen4.default : _vrouwen2.default;
       var firstname = (0, _selectNaam.selectNaam)(voornaam, voornamen);
-      var lastname = (0, _selectNaam.selectNaam)(achternaam, _achternamen2.default);
+      var lastname = (0, _selectNaam.selectNaam)(achternaam, isFrench ? _french_achternamen2.default : _achternamen2.default);
       var naam = firstname + ' ' + lastname;
 
       _this.setState({ naam: naam });
@@ -108,12 +120,17 @@ var App = function (_React$Component) {
       return _this.setState({ naam: '', hasError: false, errorReason: '' });
     };
 
+    _this.switchLanguage = function (countryString) {
+      return _this.setState({ isFrench: countryString === 'french' });
+    };
+
     _this.state = {
       voornaam: '', // input
       achternaam: '', // input
       naam: '', // result
       hasError: false, // if errorBox should be shown
-      errorReason: '' // string with detailed error
+      errorReason: '', // string with detailed error
+      isFrench: true
     };
     return _this;
   }
@@ -151,8 +168,8 @@ var App = function (_React$Component) {
             'div',
             { className: 'content' },
             _react2.default.createElement(
-              'div',
-              { className: 'glitch' },
+              Styled.glitch,
+              null,
               _react2.default.createElement('div', { className: 'glitch__img' }),
               _react2.default.createElement('div', { className: 'glitch__img' }),
               _react2.default.createElement('div', { className: 'glitch__img' }),
@@ -188,6 +205,24 @@ var App = function (_React$Component) {
                 'p',
                 { className: 'content__text' },
                 'Jouw naam in de tijd van Ren\xE9 Descartes.'
+              ),
+              _react2.default.createElement(
+                Styled.FlagContainer,
+                null,
+                _react2.default.createElement(Styled.FlagItem, {
+                  onClick: function onClick() {
+                    return _this2.switchLanguage('dutch');
+                  },
+                  isSelected: !this.state.isFrench,
+                  src: '../OudHollandseNamen/img/dutch_flag.svg',
+                  alt: '' }),
+                _react2.default.createElement(Styled.FlagItem, {
+                  onClick: function onClick() {
+                    return _this2.switchLanguage('french');
+                  },
+                  isSelected: this.state.isFrench,
+                  src: '../OudHollandseNamen/img/french_flag.png',
+                  alt: '' })
               ),
               _react2.default.createElement('input', {
                 autoFocus: true,
