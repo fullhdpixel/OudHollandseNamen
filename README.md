@@ -1,1 +1,0 @@
-Wat zou je naam zijn als je in de tijd van Descartes zou leven in de Nederlandse republiek? 
